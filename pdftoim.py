@@ -7,10 +7,12 @@ import numpy as np
 import os
 from difflib import SequenceMatcher
 
+from pyzbar.locations import bounding_box
+
 #for testing
 PDF_PATH = os.getcwd() + r"\maps\22-23\Business Intelligence Analytics - Advising Map - '22-'23.pdf"
 MAP_DIR= os.getcwd() + r"\maps\22-23"
-
+LOGGING=0
 # reader = easyocr.Reader(['en'],gpu=False)
 
 
@@ -32,9 +34,9 @@ def text_extract(path,box):
     page = doc[0]
 
     # text=page.get_textbox(box)
-    text = page.search_for("term")
+    #text = page.search_for("term")
     # print(page.get_drawings())
-    print(text)
+    #print(text)
 
 def pdf_coord_to_png(x0_pdf,x1_pdf,y0_pdf,y1_pdf,image,page):
     width_png, height_png = image.shape[1], image.shape[0]
@@ -51,8 +53,24 @@ def pdf_coord_to_png(x0_pdf,x1_pdf,y0_pdf,y1_pdf,image,page):
 
     return x0_png,x1_png,y0_png,y1_png
 
+def png_to_pdf_coord(x0_png,x1_png,y0_png,y1_png,image,page):
+    width_png, height_png = image.shape[1], image.shape[0]
+    width_pdf, height_pdf = page.rect.width, page.rect.height
+
+    #calculate scaling factors
+    scale_x =  width_pdf/width_png
+    scale_y =  height_pdf/height_png
+
+    x0_pdf = round(x0_png * scale_x)
+    y0_pdf = round(y0_png * scale_y)
+    x1_pdf = round(x1_png * scale_x)
+    y1_pdf = round(y1_png * scale_y)
+
+    return x0_pdf,x1_pdf,y0_pdf,y1_pdf
+
 def log_image(name, image):
-    cv2.imwrite(os.getcwd()+ "\\imgLogs\\" +name,image)
+    if LOGGING:
+        cv2.imwrite(os.getcwd()+ "\\imgLogs\\" +name,image)
 
 def check_if_inside(recA,recB):
     #print(f"comparing {recA} and {recB}")
@@ -69,7 +87,7 @@ def check_if_inside(recA,recB):
     yB1 = recB['y'] + recB['h']
 
     #check if each point in A is inside B
-    if xA0>xB0 and yA0>yB0 and xA1<xB1 and yA1<yB1:
+    if xA0>=xB0 and yA0>=yB0 and xA1<=xB1 and yA1<yB1:
         return True
     return False
 
@@ -80,14 +98,10 @@ def parse_map(path, count):
     doc = fitz.open(path)
     page = doc[0]
 
-    # blurred_image = cv2.bilateralFilter(image,9,75,75)
-    #log_image(f"testblurred{count}.png",blurred_image)
-
     #define the colour range to look in
     lower_black = np.array([0, 0, 0])
     upper_black = np.array([200, 200, 200])
     ranged_image = cv2.inRange(image, lower_black, upper_black)
-
 
     log_image(f"testranged{count}.png",ranged_image)
 
@@ -96,7 +110,7 @@ def parse_map(path, count):
     kernel = np.ones((5, 5), np.uint8)
 
     #then dilate them to make them larger
-    dilated_edges = cv2.dilate(edges, kernel, iterations=6)
+    dilated_edges = cv2.dilate(edges, kernel, iterations=4)
 
     #we then want to find the two top-leftmost occurrences of the word term!
     term_recs = page.search_for("term")
@@ -123,17 +137,14 @@ def parse_map(path, count):
         center_x=round((x0+x1)/2)
         term_centers.append({'term':i+1,'x':center_x,'y':y0})
 
-
+        #just for visuals
         cv2.line(output_image, (center_x, y0), (center_x, image.shape[0]), (0, 255, 0), 4)
 
     #display the intersect lines
     log_image(f"intersectLogs/term{count}.png", output_image)
-    print(term_centers)
-
 
     #display the dilated edges
     log_image(f"testedges{count}.png", dilated_edges)  # Debugging: Show edges
-
 
     #find contours
     contours, hierarchy = cv2.findContours(dilated_edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -142,7 +153,6 @@ def parse_map(path, count):
     for contour in contours:
         #bounding box for each contour
         x, y, w, h = cv2.boundingRect(contour)
-
 
         #get rid of bound boxes above the term blocks
         if y<term_centers[0]['y']:
@@ -159,11 +169,9 @@ def parse_map(path, count):
             continue
 
         boxes.append({'x':x,'y':y,"w":w,"h":h,"term":term})
-        #cv2.rectangle(output_image, (x, y), (x + w, y + h),colour, 7)
 
     #now we want to eliminate "nested" boxes
-    #this can be done with contour heirarchies but i was having difficulty
-    print(len(boxes))
+    #this can be done with contour heirarchies but i was having difficulty with that...
     to_remove=[]
     for boxA in boxes:
         for boxB in boxes:
@@ -174,35 +182,44 @@ def parse_map(path, count):
     for box in to_remove:
         boxes.remove(box)
 
-    print(len(boxes))
-    bound_count = 0
+
+
+
+    if LOGGING:
+        bound_count = 0
+        for box in boxes:
+            if box['term'] == 1:
+                colour=(224,13,224)
+            else:
+                colour=(13,34,224)
+            #must be a nicer way to unpack these
+            x=box['x']
+            y=box['y']
+            w=box['w']
+            h=box['h']
+
+            crop = image[y:y + h, x:x + w]
+            cv2.rectangle(output_image, (x, y), (x + w, y + h), colour, 7)
+            log_image(f"boundLogs/bound{bound_count}.png", crop)
+            bound_count = bound_count + 1
+
+    #convert the boxes to pdf format for pyMuPDF
+    pdf_bounding_boxes=[]
     for box in boxes:
-        if box['term'] == 1:
-            colour=(224,13,224)
-        else:
-            colour=(13,34,224)
-        #must be a nicer way to unpack these
-        x=box['x']
-        y=box['y']
-        w=box['w']
-        h=box['h']
+        x0 = box['x']
+        y0 = box['y']
+        x1 = x0+box['w']
+        y1= y0+box['h']
+        pdf_box=png_to_pdf_coord(x0,x1,y0,y1,image,page)
+        pdf_bounding_box={'term':box['term'],"x0":pdf_box[0],"y0":pdf_box[2],"x1":pdf_box[1],"y1":pdf_box[3]}
+        pdf_bounding_boxes.append(pdf_bounding_box)
+        print(f"converted {box} to {pdf_box}")
 
-        crop = image[y:y + h, x:x + w]
-        cv2.rectangle(output_image, (x, y), (x + w, y + h), colour, 7)
-        log_image(f"boundLogs/bound{bound_count}.png", crop)
-        bound_count = bound_count + 1
-
-
-    #     rec=fitz.Rect(x0, y0, x1, y1)
-    #     #image.crop(x0,y0,x1,y)
-    #     # print(rec)
-    #     # text=text_extract(path,rec)
-    #     # print(text)
-    #
-    # print(boxes[1])
-    # print(boxes[2])
-    # print(check_if_inside(boxes[1],boxes[2]))
     log_image(f"testbounded{count}.png",output_image)
+
+
+    return(pdf_bounding_boxes)
+    #IN THE FUTURE THIS CAN BE EXPANDED TO POSSIBLY GATHER PREREQS...
 
 
 #gives similarity of two strings, to account for typos in the pdf names
@@ -242,12 +259,35 @@ def parse_maps_directory(dir):
 
     return(programs)
 
+def parse_boxes(boxes,path):
+
+    doc = fitz.open(path)
+    page = doc[0]
+
+    #gotta convert these rectangles outta he cv2 format and into PyMuPDF
+    converted_boxes=[]
+    # print(boxes)
+
+    for box in boxes:
+        x0=box['x0']
+        y0=box['y0']
+        x1=box['x1']
+        y1=box['y1']
+
+        look_area=(x0,y0,x1,y1)
+        text=page.get_textbox(look_area)
+        text = page.get_textbox(look_area)
+        # print(page.get_drawings())
+        print(f"at {look_area} found {text}")
+        print("--------")
+
+
 def parse_programs(programs):
     count=0
     for program in programs.keys():
         for term in programs[program].keys():
-            print(programs[program][term])
-            parse_map(programs[program][term],count)
+            bound_boxes=parse_map(programs[program][term],count)
+            parse_boxes(bound_boxes,programs[program][term])
             return
             count+=1
 
