@@ -54,6 +54,24 @@ def pdf_coord_to_png(x0_pdf,x1_pdf,y0_pdf,y1_pdf,image,page):
 def log_image(name, image):
     cv2.imwrite(os.getcwd()+ "\\imgLogs\\" +name,image)
 
+def check_if_inside(recA,recB):
+    #print(f"comparing {recA} and {recB}")
+    #recA
+    xA0 = recA['x']
+    yA0 = recA['y']
+    xA1 = recA['x']+recA['w']
+    yA1 = recA['y']+recA['h']
+
+    #recB
+    xB0 = recB['x']
+    yB0 = recB['y']
+    xB1 = recB['x'] + recB['w']
+    yB1 = recB['y'] + recB['h']
+
+    #check if each point in A is inside B
+    if xA0>xB0 and yA0>yB0 and xA1<xB1 and yA1<yB1:
+        return True
+    return False
 
 def parse_map(path, count):
     image = get_nparray_from_pdf(path)
@@ -85,31 +103,35 @@ def parse_map(path, count):
     sorted(term_recs, key=lambda x: x[0])
     sorted(term_recs, key=lambda y: y[0])
     term_recs=[term_recs[0],term_recs[1]]
-    # print(term_recs)
-    for rec in term_recs:
-        x0=round(rec.x0)
-        x1 = round(rec.x1)
-        y0 = round(rec.y0)
-        y1 = round(rec.y1)
+    term_centers=[]
+    for i in range (0,len(term_recs)):
+        x0=round(term_recs[i].x0)
+        x1 = round(term_recs[i].x1)
+        y0 = round(term_recs[i].y0)
+        y1 = round(term_recs[i].y1)
 
         x0,x1,y0,y1=pdf_coord_to_png(x0,x1,y0,y1,image,page)
         w=x1-x0
         h=y1-y0
 
-
+        #this just draws a little lump where the bounding rec would be
         #crop = image[y:y + h, x:x + w]
         #cv2.rectangle(image, (x0, y0), (x0 + w, y0 + h), (255, 255, 0), 88)
         #log_image(f"boundLogs/term.png", image)
 
-        #what we really care about here is the x value of the center of this rectangle above is just for testing
-        center=round((x0+x1)/2)
+        #what we really care about here is the x value of the center
+        center_x=round((x0+x1)/2)
+        term_centers.append({'term':i+1,'x':center_x,'y':y0})
 
-        cv2.line(output_image, (center, 0), (center, image.shape[0]), (0, 255, 0), 4)
-       # log_image(f"IntersectLogs/term.png", output_image)
-    return
 
-    #display these term bounds
+        cv2.line(output_image, (center_x, y0), (center_x, image.shape[0]), (0, 255, 0), 4)
 
+    #display the intersect lines
+    log_image(f"intersectLogs/term{count}.png", output_image)
+    print(term_centers)
+
+
+    #display the dilated edges
     log_image(f"testedges{count}.png", dilated_edges)  # Debugging: Show edges
 
 
@@ -117,34 +139,69 @@ def parse_map(path, count):
     contours, hierarchy = cv2.findContours(dilated_edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
     boxes=[]
-    bound_count = 0
     for contour in contours:
-        if cv2.contourArea(contour)>5:
-            #bounding box
-            x, y, w, h = cv2.boundingRect(contour)
+        #bounding box for each contour
+        x, y, w, h = cv2.boundingRect(contour)
 
-            crop = image[y:y+h, x:x+w]
-            log_image(f"boundLogs/bound{bound_count}.png", crop)
-            bound_count=bound_count+1
 
-            print(f"In Bound{bound_count}, RECT:x0:{x} y0:{y} x1:{x+w} y1:{y+h} found: {text}")
-            boxes.append({'x':x,'y':y,"w":w,"h":h})
-            cv2.rectangle(output_image, (x, y), (x + w, y + h), (255, 255, 0), 7)
+        #get rid of bound boxes above the term blocks
+        if y<term_centers[0]['y']:
+            continue
 
-    #now we want to find the bounding boxes that contain "term 1" and "term 2"
-    #since these boxes are above the two columns we can use them to eliminate useless bounds
+        #get rid of bound boxes not intersecting a term block
+        #term I
+        if x < term_centers[0]['x'] < x+w:
+            term=1
+        #term II
+        elif x < term_centers[1]['x'] < x+w:
+            term=2
+        else:
+            continue
+
+        boxes.append({'x':x,'y':y,"w":w,"h":h,"term":term})
+        #cv2.rectangle(output_image, (x, y), (x + w, y + h),colour, 7)
+
+    #now we want to eliminate "nested" boxes
+    #this can be done with contour heirarchies but i was having difficulty
+    print(len(boxes))
+    to_remove=[]
+    for boxA in boxes:
+        for boxB in boxes:
+            if check_if_inside(boxA,boxB):
+                to_remove.append(boxA)
+                #print(f"{boxA} inside {boxB}")
+                break
+    for box in to_remove:
+        boxes.remove(box)
+
+    print(len(boxes))
+    bound_count = 0
     for box in boxes:
-        x0=box['x']
-        y0 = box['y']
-        x1 = x0+box['w']
-        y1 = y0+box['h']
+        if box['term'] == 1:
+            colour=(224,13,224)
+        else:
+            colour=(13,34,224)
+        #must be a nicer way to unpack these
+        x=box['x']
+        y=box['y']
+        w=box['w']
+        h=box['h']
 
-        rec=fitz.Rect(x0, y0, x1, y1)
-        #image.crop(x0,y0,x1,y)
-        # print(rec)
-        # text=text_extract(path,rec)
-        # print(text)
+        crop = image[y:y + h, x:x + w]
+        cv2.rectangle(output_image, (x, y), (x + w, y + h), colour, 7)
+        log_image(f"boundLogs/bound{bound_count}.png", crop)
+        bound_count = bound_count + 1
 
+
+    #     rec=fitz.Rect(x0, y0, x1, y1)
+    #     #image.crop(x0,y0,x1,y)
+    #     # print(rec)
+    #     # text=text_extract(path,rec)
+    #     # print(text)
+    #
+    # print(boxes[1])
+    # print(boxes[2])
+    # print(check_if_inside(boxes[1],boxes[2]))
     log_image(f"testbounded{count}.png",output_image)
 
 
