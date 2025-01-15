@@ -1,30 +1,8 @@
 import tkinter
 from tkinter import *
 from tkinter import filedialog
+from tkinter import ttk
 import os
-
-root = tkinter.Tk()
-root.title('Student RoadmApp')
-root.geometry("817x1027") #size of template image
-#root.withdraw() #use to hide tkinter window
-
-#adds a dropdown menu in window (still need to implement function calls)
-menubar = Menu(root)
-
-fileMenu = Menu(menubar, tearoff=0)
-menubar.add_cascade(label='File', menu=fileMenu)
-fileMenu.add_command(label='Select Data Source', command=None)
-fileMenu.add_command(label='Select Roadmap Directory', command=None)
-fileMenu.add_separator()
-fileMenu.add_command(label='Exit Application', command=root.destroy)
-
-#background image rendering (change path later)
-image = PhotoImage(file="overlay-test.png")
-
-canvas1 = Canvas(root, width=817, height=1027)
-canvas1.pack(fill="both", expand=True)
-canvas1.create_image(0, 0, image=image, anchor="nw")
-
 
 #prompts filesystem dialog box, returns path to file
 def searchFile():
@@ -38,6 +16,74 @@ def searchFolder():
     directoryLoc = filedialog.askdirectory(parent=root, initialdir=pwd, title='Please select a directory')
     return directoryLoc
 
+def filterTermInfo(studentData):
+    courses_per_term = []
+    for i in range(0,len(studentData['remaining_courses'])):
+        for course in studentData['remaining_courses'][i]['course_list']:
+            courses_per_term.append(course)
+
+    return courses_per_term
+
+def createCourselist(root, codes):
+    sessionCombos = []
+    possible_codes=[]
+
+    for course in codes:
+        possible_codes.append(course['code'])
+
+    for i in range(6):
+        var_store = Variable()
+        course_id = ttk.Combobox(root, textvariable=var_store, width=9)
+        course_id['values'] = possible_codes
+        course_id.state(["readonly"])
+        sessionCombos.append(course_id)
+
+    return sessionCombos
+
+def placeTermCourse(courseList, bg):
+    for i in range(6):
+        courseList[i].place(x=57, y=(225 + (i * 20)))
+        courseList[i].tkraise(aboveThis=bg)
+
+
+
+# info_test = {'id': 'W0518150', 'name': 'Evan Farrell', 'program': 'iot blah blah', 'on_track': 1, 'terms_left': 2, 'progress_roadmap': 'some image file.png', 'remaining_courses': [{'term_session': 'Fall 2019', 'course_list': [{'name': 'widgets 101', 
+# 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}]}, {'term_session': 'Winter 2020', 'course_list': [{'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}]}]}
+
+# filterTermInfo(info_test)
+# exit()
+
+
+root = tkinter.Tk()
+root.title('Student RoadmApp')
+root.geometry("794x1123") #size of A4 paper at 96PPI
+#root.withdraw() #use to hide tkinter window
+
+#adds a dropdown menu in window (still need to implement function calls)
+menubar = Menu(root)
+
+file_menu = Menu(menubar, tearoff=0)
+menubar.add_cascade(label='File', menu=file_menu)
+file_menu.add_command(label='Select Data Source', command=searchFile)
+file_menu.add_command(label='Select Roadmap Directory', command=searchFolder)
+file_menu.add_separator()
+file_menu.add_command(label='Exit Application', command=root.destroy)
+
+info_test = {'id': 'W0518150', 'name': 'Evan Farrell', 'program': 'iot blah blah', 'on_track': 1, 'terms_left': 2, 'progress_roadmap': 'some image file.png', 'remaining_courses': [{'term_session': 'Fall 2019', 'course_list': [{'name': 'widgets 101', 
+'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}]}, {'term_session': 'Winter 2020', 'course_list': [{'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}, {'name': 'widgets 101', 'code': 'W1000', 'unit_value': 1, 'misc': 'could add anything else you need...'}]}]}
+
+coursevar = filterTermInfo(info_test)
+#print(coursevar)
+term_courseList = createCourselist(root, coursevar[0:6])
+
+
+#background image rendering (change path later)
+image = PhotoImage(file="overlay-test.png")
+
+template_bg = Label(root, image=image)
+template_bg.place(x=0, y=0)
+
+placeTermCourse(term_courseList, template_bg)
 
 root.config(menu=menubar)
 root.mainloop()
