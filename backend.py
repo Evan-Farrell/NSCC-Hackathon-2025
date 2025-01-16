@@ -1,3 +1,5 @@
+import math
+
 import fitz
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -10,6 +12,7 @@ import numpy as np
 import os
 import time
 import textwrap
+import PIL
 from difflib import SequenceMatcher
 
 #for testing
@@ -17,7 +20,7 @@ PDF_PATH = os.getcwd() + r"\maps\22-23\Business Intelligence Analytics - Advisin
 MAP_DIR = os.getcwd() + r"\maps\22-23"
 DATA_PATH= os.getcwd() + r"\SampleData\Template Data.xlsx"
 LOGGING = 0
-
+LAST_SEARCHED_ID=0
 
 
 #Use fitz to open the pdc
@@ -280,7 +283,7 @@ def parse_boxes(boxes, path, program,year):
                 class_to_add = {"name":"Elective",
                       "code":"ELEC",
                       "term":box['term'],
-                      "unit_value":"PLACEHOLD",
+                      "unit_value":"1", #placeholder
                       "program": program,
                       "year":year}
                 class_list.append(class_to_add)
@@ -300,7 +303,7 @@ def parse_boxes(boxes, path, program,year):
         class_to_add={"name":class_name,
                       "code":class_code,
                       "term":box['term'],
-                      "unit_value":"PLACEHOLD",
+                      "unit_value":"1", #placeholder
                       "program": program,
                       "year":year}
         class_list.append(class_to_add)
@@ -359,8 +362,66 @@ def load_student_data(path):
     #then combine the subject+catalog into one cell
     STUDENT_DATAFRAME['code'] = STUDENT_DATAFRAME['Subject'] + ' ' + STUDENT_DATAFRAME['Catalog']
 
+def update_field(obj,val):
+    obj.update({
+        "/V": create_string_object(val)
+    })
+def unpack_data(data):
+    mapped_data=[]
+    for i,term in enumerate(data.keys(),start=1):
+        for j,course in enumerate(data[term],start=1):
+            code_tag="code"+str(i) + str(j)
+            class_tag="class" +str(i) + str(j)
+            val_tag="val"+str(i) + str(j)
+
+            code_val=data[term][course]['combobox_value']
+            label_val = data[term][course]['label1_value']
+            label2_val = data[term][course]['label2_value']
+
+            mapped_data.append((code_tag, code_val))
+            mapped_data.append((class_tag, label_val))
+            mapped_data.append((val_tag, label2_val))
+    return mapped_data
+
+def gen_pdf(data):
+    mappings=unpack_data(data)
+    reader = PdfReader(FORMAT_PATH)
+    page = reader.pages[0]
+    annotations = page.get("/Annots")
+    annot_dicts={}
+
+    for annot in annotations:
+        annot_obj = annot.get_object()
+
+        if "/FT" in annot_obj and annot_obj["/FT"] == "/Tx":
+            #updated text field
+            update_field(annot_obj,"")
+            annot_dicts[annot_obj.get("/T")]=annot_obj
+            # update_field(annot_obj,"")
+
+
+    for field,val in mappings:
+        if val==None:
+            val=""
+        update_field(annot_dicts[field],str(val))
+
+
+    writer=PdfWriter()
+    writer.add_page(page)
+
+    output_pdf = os.getcwd()+r"\latexFunctions\export.pdf"
+    with open(output_pdf, "wb") as output_file:
+        writer.write(output_file)
+
+    print(f"Modified PDF saved as '{output_pdf}'")
+    return 1
 
 def get_student_info(id):
+
+    if str(id)[0].upper() =="W":
+        id=int(str(id)[1:])
+    LAST_SEARCHED_ID=id
+
     courses_taken=STUDENT_DATAFRAME[STUDENT_DATAFRAME['Empl ID']==id]
     student_name=courses_taken['Student Name'].values[0]
     student_program=courses_taken['Acad Plan'].values[0]
@@ -408,16 +469,64 @@ def get_student_info(id):
         #       f" PASSED: {classes_needed.loc[index_need,'passed']}" +
         #       f" ATTEMPTED: {classes_needed.loc[index_need,'attempted']}")
 
-    #now break the courses into year and term
+
 
     #make graph
-    make_student_graph(classes_needed.copy(),student_name,id)
-    return
-    #make plan
-    num_years=len(classes_needed['year'].unique())
-    credits_passed=len(classes_needed[classes_needed['passed']==1])
-    print(credits_passed)
-    terms=[]*num_years
+    map_img=make_student_graph(classes_needed.copy(),student_name,id)
+
+    #create student info for gui...
+    classes_left=classes_needed[classes_needed['passed']==0]
+
+    term1=classes_left[classes_left['term']==1]
+    term2 = classes_left[classes_left['term'] == 2]
+
+
+    remaining_courses = []
+    num_fall_terms=math.ceil(len(term1)/6)
+    num_winter_terms=math.ceil(len(term2)//6)
+
+    add_count=0
+    for term in range(0,num_fall_terms):
+        course_list=[]
+        while len(course_list)<=5 and add_count<len(term1):
+            course = {"name": term1.iloc[add_count]['name'],
+                      "code": term1.iloc[add_count]['code'],
+                      "unit_value": term1.iloc[add_count]['unit_value'],
+                      "misc": "could add anything else you need..."
+                      }
+            add_count=add_count+1
+            course_list.append(course)
+        term_to_add = {"term_session": f"Fall 20{25+term}",
+                     "course_list": course_list
+                     }
+        remaining_courses.append(term_to_add)
+
+    add_count = 0
+    for term in range(0, num_winter_terms):
+        course_list = []
+        while len(course_list) <= 5 and add_count < len(term2):
+            course = {"name": term2.iloc[add_count]['name'],
+                      "code": term2.iloc[add_count]['code'],
+                      "unit_value": term2.iloc[add_count]['unit_value'],
+                      "misc": "could add anything else you need..."
+                      }
+            add_count = add_count + 1
+            course_list.append(course)
+        term_to_add = {"term_session": f"Winter 20{25 + term}",
+                       "course_list": course_list
+                       }
+        remaining_courses.append(term_to_add)
+
+    student_info = {
+        'id':"W"+str(id),
+        'name': student_name,
+        'program': student_program,
+        'on_track': 0, #placehold
+        'terms_left': 0, #placehold
+        'progress_roadmap': map_img,
+        'remaining_courses': remaining_courses
+    }
+    return student_info
 
 def make_student_graph(courses,name,id):
     num_years = len(courses['year'].unique())
@@ -478,28 +587,37 @@ def make_student_graph(courses,name,id):
     ax.axis('off')
 
     plt.title(f"Academic map for {courses['program'].iloc[0]} \n {name} {id}    ")
-    plt.show()
 
-start=time.time()
+    #plt.show()
 
-if __name__ == "main":
+    #fig to a PIL Image
+    fig.canvas.draw()
+    raw_data = fig.canvas.buffer_rgba()
+    width, height = fig.canvas.get_width_height()
+    image_array = np.frombuffer(raw_data, dtype=np.uint8).reshape(height, width, 4)
+    pil_image = Image.fromarray(image_array)
+    plt.clf()
+
+    return pil_image
 
 
-# programs = parse_maps_directory(MAP_DIR)
-# parse_programs(programs)
-pd.options.display.max_columns = 100
-CLASS_DATAFRAME=pd.read_csv("test.csv")
-load_student_data(DATA_PATH)
 
-get_student_info(1635643)
-# for x in range(0,100):
-#     get_student_info(1672629)
-# get_student_info(1672629)
-#failed twice
-# get_student_info(1635643)
-print(f"took {time.time() - start} secs")
+if __name__ == "__main__":
+    start=time.time()
 
-# make_student_graph("foo")
-# Sample data: courses and their statuses
+
+    # programs = parse_maps_directory(MAP_DIR)
+    # parse_programs(programs)
+    pd.options.display.max_columns = 100
+    CLASS_DATAFRAME=pd.read_csv("test.csv")
+    load_student_data(DATA_PATH)
+
+    # get_student_info(1635643)
+
+    print(get_student_info("W1672629"))
+    #failed twice
+    # get_student_info(1635643)
+
+    print(f"took {time.time() - start} secs")
 
 
