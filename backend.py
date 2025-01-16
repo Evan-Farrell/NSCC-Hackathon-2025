@@ -16,7 +16,7 @@ from difflib import SequenceMatcher
 PDF_PATH = os.getcwd() + r"\maps\22-23\Business Intelligence Analytics - Advising Map - '22-'23.pdf"
 MAP_DIR = os.getcwd() + r"\maps\22-23"
 DATA_PATH= os.getcwd() + r"\SampleData\Template Data.xlsx"
-LOGGING = 0
+LOGGING = 1
 
 
 
@@ -408,16 +408,26 @@ def get_student_info(id):
         #       f" PASSED: {classes_needed.loc[index_need,'passed']}" +
         #       f" ATTEMPTED: {classes_needed.loc[index_need,'attempted']}")
 
-    #now break the courses into year and term
+
 
     #make graph
-    make_student_graph(classes_needed.copy(),student_name,id)
-    return
-    #make plan
-    num_years=len(classes_needed['year'].unique())
-    credits_passed=len(classes_needed[classes_needed['passed']==1])
-    print(credits_passed)
-    terms=[]*num_years
+   # make_student_graph(classes_needed.copy(),student_name,id)
+
+    #create student info for gui...
+    student_info = {
+        'id':id,
+        'name': student_name,
+        'program': 'iot blah blah',
+        'on_track': 1,  # true if the student is behind the road map 'i.e bad student'
+        'terms_left': 2,  # shortest number of terms left to graduate
+        'progress_roadmap': "some image file.png",
+        'remaining_courses': ""
+    }
+    print(student_info)
+    # num_years=len(classes_needed['year'].unique())
+    # credits_passed=len(classes_needed[classes_needed['passed']==1])
+    # print(credits_passed)
+    # terms=[]*num_years
 
 def make_student_graph(courses,name,id):
     num_years = len(courses['year'].unique())
@@ -478,23 +488,24 @@ def make_student_graph(courses,name,id):
     ax.axis('off')
 
     plt.title(f"Academic map for {courses['program'].iloc[0]} \n {name} {id}    ")
-    plt.show()
+    #plt.show()
+
 
 start=time.time()
-
-if __name__ == "main":
 
 
 # programs = parse_maps_directory(MAP_DIR)
 # parse_programs(programs)
-pd.options.display.max_columns = 100
+# pd.options.display.max_columns = 100
 CLASS_DATAFRAME=pd.read_csv("test.csv")
 load_student_data(DATA_PATH)
 
-get_student_info(1635643)
+# get_student_info(1635643)
+
+#
 # for x in range(0,100):
 #     get_student_info(1672629)
-# get_student_info(1672629)
+get_student_info(1672629)
 #failed twice
 # get_student_info(1635643)
 print(f"took {time.time() - start} secs")
