@@ -1,0 +1,164 @@
+% Here we pass all the variables in from the python code. I took the pgf code from the below link.
+% https://tex.stackexchange.com/questions/37094/what-is-the-recommended-way-to-assign-a-value-to-a- variable-and-retrieve-it-for?
+%-------------------------------------------------------- 
+\newcommand{\setvalue}[1]{\pgfkeys{/variables/#1}}
+\newcommand{\getvalue}[1]{\pgfkeysvalueof{/variables/#1}}
+\newcommand{\declare}[1]{%
+ \pgfkeys{
+  /variables/#1.is family,
+  /variables/#1.unknown/.style = {\pgfkeyscurrentpath/\pgfkeyscurrentname/.initial = ##1}
+ }
+}
+\declare{student/}
+\declare{term1/}
+\declare{term2/}
+\declare{term3/}
+\declare{term4/}
+\declare{term5/}
+\declare{term6/}
+%-------------------------------------------------------- 
+%Student Info
+\setvalue{student, name=Evan Farrell,id=W0518150, program = Iot,date=,}
+%Term1
+\setvalue{term1,
+            totalUnitsEnrolled=6,
+            totalUnitsFull=6,
+            percentFullTimeLoad=100\%,
+            code1=DBAS 1000,
+            class1=Databases and Stuff, 
+            val1=2,
+            code2=HACK 1001,
+            class2=blah blah blah, 
+            val2=7,
+            code3=ABCD 2222,
+            class3=Alphabets, 
+            val3=0,
+            code4=,
+            class4=class4, 
+            val4=,
+            code5=,
+            class5=class5, 
+            val5=,
+            code6=,
+            class6=class6, 
+            val6=,}
+
+%Term2
+\setvalue{term2,
+            totalUnitsEnrolled=,
+            totalUnitsFull=,
+            percentFullTimeLoad=,
+            code1=DBAS 1000,
+            class1=Databases and Stuff, 
+            val1=2,
+            code2=HACK 1001,
+            class2=blah blah blah, 
+            val2=7,
+            code3=ABCD 2222,
+            class3=Alphabets, 
+            val3=0,
+            code4=,
+            class4=, 
+            val4=,
+            code5=,
+            class5=, 
+            val5=,
+            code6=,
+            class6=, 
+            val6=,}
+
+%Term3
+\setvalue{term3,
+            totalUnitsEnrolled=,
+            totalUnitsFull=,
+            percentFullTimeLoad=,
+            code1=DBAS 1000,
+            class1=Databases and Stuff, 
+            val1=2,
+            code2=HACK 1001,
+            class2=blah blah blah, 
+            val2=7,
+            code3=ABCD 2222,
+            class3=Alphabets, 
+            val3=00,
+            code4=,
+            class4=, 
+            val4=,
+            code5=,
+            class5=, 
+            val5=,
+            code6=,
+            class6=, 
+            val6=,}
+
+%Term4
+\setvalue{term4,
+            totalUnitsEnrolled=,
+            totalUnitsFull=,
+            percentFullTimeLoad=,
+            code1=HACK1000,
+            class1=Databases and Stuff, 
+            val1=2,
+            code2=term4 2,
+            class2=blah blah blah, 
+            val2=7,
+            code3=term4 3,
+            class3=Alphabets, 
+            val3=0,
+            code4=term4 4,
+            class4=, 
+            val4=,
+            code5=term4 5,
+            class5=, 
+            val5=,
+            code6=term 4 6,
+            class6=, 
+            val6=,}
+
+%Term5
+\setvalue{term5,
+            totalUnitsEnrolled=,
+            totalUnitsFull=,
+            percentFullTimeLoad=,
+            code1=DBAS 1000,
+            class1=Databases and Stuff, 
+            val1=2,
+            code2=HACK 1001,
+            class2=blah blah blah, 
+            val2=7,
+            code3=ABCD 2222,
+            class3=Alphabets, 
+            val3=0,
+            code4=,
+            class4=, 
+            val4=,
+            code5=,
+            class5=, 
+            val5=,
+            code6=,
+            class6=, 
+            val6=,}
+
+%Term6
+\setvalue{term6,
+            totalUnitsEnrolled=,
+            totalUnitsFull=,
+            percentFullTimeLoad=,
+            code1=DBAS 1000,
+            class1=Databases and Stuff, 
+            val1=2,
+            code2=HACK 1001,
+            class2=blah blah blah, 
+            val2=7,
+            code3=ABCD 2222,
+            class3=Alphabets, 
+            val3=0,
+            code4=,
+            class4=, 
+            val4=,
+            code5=,
+            class5=, 
+            val5=,
+            code6=,
+            class6=, 
+            val6=,}
