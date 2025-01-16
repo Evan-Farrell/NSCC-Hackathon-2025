@@ -1,0 +1,188 @@
+name,code,term,unit_value,program,year
+Capstone,INFT 3000,2,PLACEHOLD,Business Intelligence Analytics,year0
+Structured Query Language for Analysts,DBAS 5010,1,PLACEHOLD,Business Intelligence Analytics,year0
+Data Provisioning with ETL,DBAS 2103,2,PLACEHOLD,Business Intelligence Analytics,year0
+Business Analysis Essentials,DBAS 2104,1,PLACEHOLD,Business Intelligence Analytics,year0
+Special Topics II,INFT 4001,2,PLACEHOLD,Business Intelligence Analytics,year0
+Introduction to Business Intelligence,DBAS 4075,1,PLACEHOLD,Business Intelligence Analytics,year0
+Data Reporting,DBAS 2101,1,PLACEHOLD,Business Intelligence Analytics,year0
+Introduction to Data Science,DBAS 5015,2,PLACEHOLD,Business Intelligence Analytics,year0
+Applied Data Science,DBAS 5020,2,PLACEHOLD,Business Intelligence Analytics,year0
+Database Design II,DBAS 2010,1,PLACEHOLD,Business Intelligence Analytics,year0
+Server Exploits,PROG 2022,2,PLACEHOLD,Cyber Security,year1
+Data Security,DBAS 1020,1,PLACEHOLD,Cyber Security,year1
+Linux Scripting,OSYS 2022,2,PLACEHOLD,Cyber Security,year1
+Programming for Security,PROG 1015,1,PLACEHOLD,Cyber Security,year1
+Windows Security,OSYS 2020,2,PLACEHOLD,Cyber Security,year1
+Operating Systems Security,OSYS 1020,1,PLACEHOLD,Cyber Security,year1
+Vulnerabilities & Exploits,ISEC 2025,2,PLACEHOLD,Cyber Security,year1
+Cyber Crime Survey,ISEC 1005,1,PLACEHOLD,Cyber Security,year1
+"Firewalls, VPN’s, IPS, Endpoints",ISEC 2022,2,PLACEHOLD,Cyber Security,year1
+Network Security,NETW 1015,1,PLACEHOLD,Cyber Security,year1
+Professional Practices for IT II,COMM 2700,2,PLACEHOLD,Cyber Security,year1
+Professional Practices for IT I,COMM 1700,1,PLACEHOLD,Cyber Security,year1
+Enterprise Security,ISEC 3080,2,PLACEHOLD,Cyber Security,year2
+Security Auditing & Control Systems,ISEC 2077,1,PLACEHOLD,Cyber Security,year2
+Capstone,INFT 3000,2,PLACEHOLD,Cyber Security,year2
+Wireless & Mobile Device Security,ISEC 2078,1,PLACEHOLD,Cyber Security,year2
+Attack Vectors & Techniques,ISEC 3077,2,PLACEHOLD,Cyber Security,year2
+Web Security,WEBD 2075,1,PLACEHOLD,Cyber Security,year2
+Penetration Testing,ISEC 3079,2,PLACEHOLD,Cyber Security,year2
+Security Mechanisms,ISEC 2076,1,PLACEHOLD,Cyber Security,year2
+Incidence Handling & Response,ISEC 3078,2,PLACEHOLD,Cyber Security,year2
+Evolving Technologies & Threats,ISEC 2079,1,PLACEHOLD,Cyber Security,year2
+Professional Practices for IT IV,COMM 4700,2,PLACEHOLD,Cyber Security,year2
+Professional Practices for IT III,COMM 3700,1,PLACEHOLD,Cyber Security,year2
+Full Stack Web Development II,WEBD 5015,2,PLACEHOLD,Full Stack App Dev,year0
+HTML & CSS Fundamentals,WEBD 5000,1,PLACEHOLD,Full Stack App Dev,year0
+Full Stack Web Development I,WEBD 5010,2,PLACEHOLD,Full Stack App Dev,year0
+Front-End Programming,PROG 5010,1,PLACEHOLD,Full Stack App Dev,year0
+Software Application Security,ISEC 5000,2,PLACEHOLD,Full Stack App Dev,year0
+Operating Systems & Networking,OSYS 5000,1,PLACEHOLD,Full Stack App Dev,year0
+Agile Methodology,ICOM 5015,2,PLACEHOLD,Full Stack App Dev,year0
+Intro to Software Development,APPD 5000,1,PLACEHOLD,Full Stack App Dev,year0
+Career Development for IT Professionals,ICOM 5010,2,PLACEHOLD,Full Stack App Dev,year0
+Business Development & Entrepreneurship for IT,ICOM 5000,1,PLACEHOLD,Full Stack App Dev,year0
+Cross Platform Application Development,APPD 5015,2,PLACEHOLD,Full Stack App Dev,year0
+Database Development,DBAS 5000,1,PLACEHOLD,Full Stack App Dev,year0
+Software Testing & Quality Control,APPD 5010,2,PLACEHOLD,Full Stack App Dev,year0
+Server-Side Programming,INET 5010,1,PLACEHOLD,Full Stack App Dev,year0
+Applied Semester Project I,INFT 2007,2,PLACEHOLD,IT Data Analytics,year1
+Operating Systems – Linux,OSYS 1000,2,PLACEHOLD,IT Data Analytics,year1
+Business Analysis Essentials,DBAS 2104,1,PLACEHOLD,IT Data Analytics,year1
+Introduction to Statistical Learning,DBAS 3075,2,PLACEHOLD,IT Data Analytics,year1
+Introduction to Networking & Security,NETW 1700,1,PLACEHOLD,IT Data Analytics,year1
+Website Development,WEBD 1000,2,PLACEHOLD,IT Data Analytics,year1
+Introduction to Hardware & Operating Systems,OSYS 1700,1,PLACEHOLD,IT Data Analytics,year1
+Introduction to Object Oriented Programming,PROG 1400,2,PLACEHOLD,IT Data Analytics,year1
+Logic & Programming I,PROG 1700,1,PLACEHOLD,IT Data Analytics,year1
+Data Fundamentals,DBAS 1007,1,PLACEHOLD,IT Data Analytics,year1
+Transactional Database Programming,DBAS 4002,2,PLACEHOLD,IT Data Analytics,year1
+Data Fundamentals,DBAS 1007,1,PLACEHOLD,IT Data Analytics,year1
+Professional Practices for IT II,COMM 2700,2,PLACEHOLD,IT Data Analytics,year1
+Professional Practices for IT I,COMM 1700,1,PLACEHOLD,IT Data Analytics,year1
+Capstone,INFT 3000,2,PLACEHOLD,IT Data Analytics,year2
+Server Operating Systems & Scripting,INET 3700,1,PLACEHOLD,IT Data Analytics,year2
+Data Security,DBAS 3085,2,PLACEHOLD,IT Data Analytics,year2
+Business Data Modelling,DBAS 3019,1,PLACEHOLD,IT Data Analytics,year2
+Applied Data Analytics,DBAS 3090,2,PLACEHOLD,IT Data Analytics,year2
+Data Movement & Integration,DBAS 3018,1,PLACEHOLD,IT Data Analytics,year2
+Mobile App Development - Android,MOBI 3002,2,PLACEHOLD,IT Data Analytics,year2
+User Experience Techniques for Data,DBAS 3017,1,PLACEHOLD,IT Data Analytics,year2
+Client Side Programming I,PROG 2700,2,PLACEHOLD,IT Data Analytics,year2
+Ethics & Law in Data Analytics,ISEC 3050,1,PLACEHOLD,IT Data Analytics,year2
+Professional Practices for IT IV,COMM 4700,2,PLACEHOLD,IT Data Analytics,year2
+Professional Practices for IT III,COMM 3700,1,PLACEHOLD,IT Data Analytics,year2
+Applied Semester Project I,INFT 2007,2,PLACEHOLD,IT Database Administration,year1
+Operating Systems – Linux,OSYS 1000,2,PLACEHOLD,IT Database Administration,year1
+Introduction to Hardware & Operating Systems,OSYS 1700,1,PLACEHOLD,IT Database Administration,year1
+Website Development,WEBD 1000,2,PLACEHOLD,IT Database Administration,year1
+Introduction to Networking & Security,NETW 1700,1,PLACEHOLD,IT Database Administration,year1
+Small Business Infrastructure,NETW 1300,2,PLACEHOLD,IT Database Administration,year1
+Business Analysis Essentials,DBAS 2104,1,PLACEHOLD,IT Database Administration,year1
+Introduction to Object Oriented Programming,PROG 1400,2,PLACEHOLD,IT Database Administration,year1
+Logic & Programming I,PROG 1700,1,PLACEHOLD,IT Database Administration,year1
+Transactional Database Programming,DBAS 4002,2,PLACEHOLD,IT Database Administration,year1
+Data Fundamentals,DBAS 1007,1,PLACEHOLD,IT Database Administration,year1
+Professional Practices for IT II,COMM 2700,2,PLACEHOLD,IT Database Administration,year1
+Professional Practices for IT I,COMM 1700,1,PLACEHOLD,IT Database Administration,year1
+Capstone,INFT 3000,2,PLACEHOLD,IT Database Administration,year2
+Ethics & Law in Data Analytics,ISEC 3050,1,PLACEHOLD,IT Database Administration,year2
+Data Movement & Integration,DBAS 3018,2,PLACEHOLD,IT Database Administration,year2
+Metadata Management,DBAS 3021,1,PLACEHOLD,IT Database Administration,year2
+Database Backup & Recovery,DBAS 3080,2,PLACEHOLD,IT Database Administration,year2
+Data Security,DBAS 3085,1,PLACEHOLD,IT Database Administration,year2
+Information Systems Design,DBAS 3035,2,PLACEHOLD,IT Database Administration,year2
+Data Server Management in Linux,OSYS 3017,1,PLACEHOLD,IT Database Administration,year2
+Information Governance,DBAS 3025,2,PLACEHOLD,IT Database Administration,year2
+Server Operating Systems & Scripting,INET 3700,1,PLACEHOLD,IT Database Administration,year2
+Professional Practices for IT IV,COMM 4700,2,PLACEHOLD,IT Database Administration,year2
+Professional Practices for IT III,COMM 3700,1,PLACEHOLD,IT Database Administration,year2
+Integrated Project,INFT 3010,2,PLACEHOLD,IT Embedded Systems Programming,year0
+Introduction to Embedded Systems Programming,PROG 5015,1,PLACEHOLD,IT Embedded Systems Programming,year0
+Cloud Services,NETW 3012,2,PLACEHOLD,IT Embedded Systems Programming,year0
+IoT Programming w Java Script,PROG 3012,1,PLACEHOLD,IT Embedded Systems Programming,year0
+Mobile Development,MOBI 3000,2,PLACEHOLD,IT Embedded Systems Programming,year0
+Embedded C,PROG 3011,1,PLACEHOLD,IT Embedded Systems Programming,year0
+Practical Electronics II,ELEC 3011,2,PLACEHOLD,IT Embedded Systems Programming,year0
+Practical Electronics I,ELEC 3000,1,PLACEHOLD,IT Embedded Systems Programming,year0
+Embedded Controllers II,ELEC 3020,2,PLACEHOLD,IT Embedded Systems Programming,year0
+Embedded Controllers I,ELEC 3010,1,PLACEHOLD,IT Embedded Systems Programming,year0
+IoT Security,ISEC 3010,2,PLACEHOLD,IT Embedded Systems Programming,year0
+Embedded Operating Systems,OSYS 3012,1,PLACEHOLD,IT Embedded Systems Programming,year0
+Elective,ELEC,2,PLACEHOLD,IT Programming,year1
+Introduction to Systems Analysis & Design (AD),SAAD 1001,2,PLACEHOLD,IT Programming,year1
+Website Development,WEBD 1000,1,PLACEHOLD,IT Programming,year1
+Programming II,PROG 2007,2,PLACEHOLD,IT Programming,year1
+Logic & Programming,PROG 1700,1,PLACEHOLD,IT Programming,year1
+Introduction to Object Oriented Programming,PROG 1400,2,PLACEHOLD,IT Programming,year1
+Introduction to Windows Administration,OSYS 1200,1,PLACEHOLD,IT Programming,year1
+Operating Systems – Linux,OSYS 1000,2,PLACEHOLD,IT Programming,year1
+Introduction to Networking & Security,NETW 1700,1,PLACEHOLD,IT Programming,year1
+User Interface Design & Development,APPD 1001,2,PLACEHOLD,IT Programming,year1
+Data Fundamentals,DBAS 1007,1,PLACEHOLD,IT Programming,year1
+Professional Practices for IT II,COMM 2700,2,PLACEHOLD,IT Programming,year1
+Professional Practices for IT I,COMM 1700,1,PLACEHOLD,IT Programming,year1
+Capstone,INFT 3000,2,PLACEHOLD,IT Programming,year2
+Mobile Application Development – Android,MOBI 3002,1,PLACEHOLD,IT Programming,year2
+Elective,ELEC,2,PLACEHOLD,IT Programming,year2
+Project Management,INFT 2100,1,PLACEHOLD,IT Programming,year2
+Elective,ELEC,2,PLACEHOLD,IT Programming,year2
+Web Application Programming I,INET 2005,1,PLACEHOLD,IT Programming,year2
+Windows Programming C#,PROG 2500,2,PLACEHOLD,IT Programming,year2
+Advanced OOP,PROG 2200,1,PLACEHOLD,IT Programming,year2
+Data Structures,PROG 2400,2,PLACEHOLD,IT Programming,year2
+Programming C++,PROG 2100,1,PLACEHOLD,IT Programming,year2
+Professional Practices for IT IV,COMM 4700,2,PLACEHOLD,IT Programming,year2
+Professional Practices for IT III,COMM 3700,1,PLACEHOLD,IT Programming,year2
+Operating Systems – Linux,OSYS 1000,2,PLACEHOLD,IT Systems Managememt and Security,year1
+Introduction to Hardware & Security,HDWR 1700,1,PLACEHOLD,IT Systems Managememt and Security,year1
+Network Infrastructure,NETW 2700,2,PLACEHOLD,IT Systems Managememt and Security,year1
+Logic & Programming I,PROG 1700,1,PLACEHOLD,IT Systems Managememt and Security,year1
+Introduction to Cloud Computing & Server Virtualization,NETW 2710,2,PLACEHOLD,IT Systems Managememt and Security,year1
+Introduction to Networking & Security,NETW 1700,1,PLACEHOLD,IT Systems Managememt and Security,year1
+Introduction to NOS Administration,NETW 1500,2,PLACEHOLD,IT Systems Managememt and Security,year1
+Introduction to Windows Administration,OSYS 1200,1,PLACEHOLD,IT Systems Managememt and Security,year1
+Introduction to Information Security Practices,ISEC 2700,2,PLACEHOLD,IT Systems Managememt and Security,year1
+Data Fundamentals,DBAS 1007,1,PLACEHOLD,IT Systems Managememt and Security,year1
+Professional Practices for IT II,COMM 2700,2,PLACEHOLD,IT Systems Managememt and Security,year1
+Professional Practices for IT I,COMM 1700,1,PLACEHOLD,IT Systems Managememt and Security,year1
+Capstone,INFT 3000,2,PLACEHOLD,IT Systems Managememt and Security,year2
+Intro to System & Analysis & Design (ISM),SAAD 1002,1,PLACEHOLD,IT Systems Managememt and Security,year2
+Enterprise Management & Automation,NETW 3500,2,PLACEHOLD,IT Systems Managememt and Security,year2
+NOS Administration – Windows II,NETW 2500,1,PLACEHOLD,IT Systems Managememt and Security,year2
+Emerging Technologies ,INFT 3075,2,PLACEHOLD,IT Systems Managememt and Security,year2
+Hierarchical Network Infrastructure,NETW 3700,1,PLACEHOLD,IT Systems Managememt and Security,year2
+Self-Directed Study,ICOM 3010,2,PLACEHOLD,IT Systems Managememt and Security,year2
+Network Services using Linux,OSYS 3030,1,PLACEHOLD,IT Systems Managememt and Security,year2
+Advanced Security Analysis& Implementation ,ISEC 3800,2,PLACEHOLD,IT Systems Managememt and Security,year2
+Intro to Security Analysis & Implementation,ISEC 3700,1,PLACEHOLD,IT Systems Managememt and Security,year2
+Help Desk & Customer Services,CSTN 4015,2,PLACEHOLD,IT Systems Managememt and Security,year2
+Project Management for IT,ICOM 1325,1,PLACEHOLD,IT Systems Managememt and Security,year2
+Professional Practices for IT IV,COMM 4700,2,PLACEHOLD,IT Systems Managememt and Security,year2
+Professional Practices for IT III,COMM 3700,1,PLACEHOLD,IT Systems Managememt and Security,year2
+User Interface Design & Development,APPD 1001,2,PLACEHOLD,IT Web Programming,year1
+Client Side Programming I,PROG 2700,2,PLACEHOLD,IT Web Programming,year1
+Website Development,WEBD 1000,1,PLACEHOLD,IT Web Programming,year1
+Introduction to Systems Analysis & Design (AD),SAAD 1001,2,PLACEHOLD,IT Web Programming,year1
+Logic & Programming I,PROG 1700,1,PLACEHOLD,IT Web Programming,year1
+Introduction to Object Oriented Programming,PROG 1400,2,PLACEHOLD,IT Web Programming,year1
+Introduction to Windows Administration,OSYS 1200,1,PLACEHOLD,IT Web Programming,year1
+Operating Systems – Linux,OSYS 1000,2,PLACEHOLD,IT Web Programming,year1
+Introduction to Networking & Security,NETW 1700,1,PLACEHOLD,IT Web Programming,year1
+Web Server Fundamentals,OSYS 2040,2,PLACEHOLD,IT Web Programming,year1
+Data Fundementals,DBAS 1007,1,PLACEHOLD,IT Web Programming,year1
+Professional Practices for IT II,COMM 2700,2,PLACEHOLD,IT Web Programming,year1
+Professional Practices for IT I,COMM 1700,1,PLACEHOLD,IT Web Programming,year1
+Web Application Programming II,WEDB 3000,2,PLACEHOLD,IT Web Programming,year2
+Web Application Programming I,INET 2005,1,PLACEHOLD,IT Web Programming,year2
+Developing for Content Management Systems,WEBD 3027,2,PLACEHOLD,IT Web Programming,year2
+Full Stack Programming,PROG 3017,1,PLACEHOLD,IT Web Programming,year2
+Elective,ELEC,2,PLACEHOLD,IT Web Programming,year2
+Elective,ELEC,1,PLACEHOLD,IT Web Programming,year2
+Elective,ELEC,2,PLACEHOLD,IT Web Programming,year2
+Web Design Fundamentals,WEBD 3100,1,PLACEHOLD,IT Web Programming,year2
+Capstone,INFT 3000,2,PLACEHOLD,IT Web Programming,year2
+Project Management,INFT 2100,1,PLACEHOLD,IT Web Programming,year2
+Professional Practices for IT IV,COMM 4700,2,PLACEHOLD,IT Web Programming,year2
+Professional Practices for IT III,COMM 3700,1,PLACEHOLD,IT Web Programming,year2
