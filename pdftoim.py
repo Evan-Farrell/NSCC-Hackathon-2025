@@ -16,12 +16,11 @@ from difflib import SequenceMatcher
 PDF_PATH = os.getcwd() + r"\maps\22-23\Business Intelligence Analytics - Advising Map - '22-'23.pdf"
 MAP_DIR = os.getcwd() + r"\maps\22-23"
 DATA_PATH= os.getcwd() + r"\SampleData\Template Data.xlsx"
-
 LOGGING = 0
 
 
 
-#use fitz to open the pdf
+#Use fitz to open the pdc
 def get_nparray_from_pdf(path):
     doc = fitz.open(path)
 
@@ -33,9 +32,11 @@ def get_nparray_from_pdf(path):
     cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
     return cv_image
 
+#convert coordinates on the pdf plane to the cv2 plane
 def pdf_coord_to_png(x0_pdf, x1_pdf, y0_pdf, y1_pdf, image, page):
+    #get the dimensions of each
     width_png, height_png = image.shape[1], image.shape[0]
-    width_pdf, height_pdf = page.rect.width, page.rect.height  # Example PDF size (A4 in points, 8.5"x11" at 72 DPI)
+    width_pdf, height_pdf = page.rect.width, page.rect.height
 
     #calculate scaling factors
     scale_x = width_png / width_pdf
@@ -48,7 +49,7 @@ def pdf_coord_to_png(x0_pdf, x1_pdf, y0_pdf, y1_pdf, image, page):
 
     return x0_png, x1_png, y0_png, y1_png
 
-
+#convert coordinates on the cv2 plane to the pdf plane
 def png_to_pdf_coord(x0_png, x1_png, y0_png, y1_png, image, page):
     width_png, height_png = image.shape[1], image.shape[0]
     width_pdf, height_pdf = page.rect.width, page.rect.height
@@ -64,14 +65,13 @@ def png_to_pdf_coord(x0_png, x1_png, y0_png, y1_png, image, page):
 
     return x0_pdf, x1_pdf, y0_pdf, y1_pdf
 
-
+#Saves an image if logging is enables
 def log_image(name, image):
     if LOGGING:
         cv2.imwrite(os.getcwd() + "\\imgLogs\\" + name, image)
 
-
+#checks if recA is inside recB
 def check_if_inside(recA, recB):
-    #print(f"comparing {recA} and {recB}")
     #recA
     xA0 = recA['x']
     yA0 = recA['y']
@@ -89,7 +89,7 @@ def check_if_inside(recA, recB):
         return True
     return False
 
-
+#takes in a single academic map pdf and
 def parse_map(path, count):
     image = get_nparray_from_pdf(path)
     output_image = image.copy()
@@ -209,19 +209,20 @@ def parse_map(path, count):
         pdf_box = png_to_pdf_coord(x0, x1, y0, y1, image, page)
         pdf_bounding_box = {'term': box['term'], "x0": pdf_box[0], "y0": pdf_box[2], "x1": pdf_box[1], "y1": pdf_box[3]}
         pdf_bounding_boxes.append(pdf_bounding_box)
-        #print(f"converted {box} to {pdf_box}")
 
     log_image(f"testbounded{count}.png", output_image)
 
     return (pdf_bounding_boxes)
-    #IN THE FUTURE THIS CAN BE EXPANDED TO POSSIBLY GATHER PREREQS...
+    #TODO: extract prereq info
+    #TODO: extract course value info
+
 
 
 #gives similarity of two strings, to account for typos in the pdf names
 def string_similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-
+#Go through the academic maps folder and extracts info from each pdf title
 def parse_maps_directory(dir):
     programs = defaultdict(dict)
 
@@ -253,7 +254,7 @@ def parse_maps_directory(dir):
 
     return (programs)
 
-
+#Gathers the class info from each bounding box extracted from the map pdfs
 def parse_boxes(boxes, path, program,year):
     doc = fitz.open(path)
     page = doc[0]
@@ -270,7 +271,6 @@ def parse_boxes(boxes, path, program,year):
 
         look_area = (x0, y0, x1, y1)
         text = page.get_textbox(look_area)
-
 
         #first check if it contains a class code
         searched = re.findall(class_pattern, text)
@@ -329,9 +329,11 @@ def parse_programs(programs):
 def load_student_data(path):
     global STUDENT_DATAFRAME
     STUDENT_DATAFRAME=pd.read_excel(DATA_PATH, engine='openpyxl')
+    #combine the subject+catalog into one cell
+    STUDENT_DATAFRAME['code'] = STUDENT_DATAFRAME['Subject'] + ' ' + STUDENT_DATAFRAME['Catalog']
 
-
-    #first we want to map the weird abbreivations to something more readable
+    #first we want to map the weird abbreviations to something more readable
+    #we do this by checking each abbrev and seeing what classes overlap
     #i.e ITDBADMIN -> IT Database Administration
     abbreviations=STUDENT_DATAFRAME['Acad Plan'].unique()
     program_names = CLASS_DATAFRAME['program'].unique()
@@ -339,41 +341,41 @@ def load_student_data(path):
     for abbrev in abbreviations:
         #get all the classes a student in a certain abbreviation took
         prog_df=STUDENT_DATAFRAME[STUDENT_DATAFRAME['Acad Plan'] == abbrev]
-        abbrevs_classes=prog_df['Subject']+" "+prog_df['Catalog']
+        abbrevs_classes=prog_df['code']
 
         #get the program that shares the most overlap with the courses
         overlap=CLASS_DATAFRAME[CLASS_DATAFRAME['code'].isin(abbrevs_classes)]
         best_guess=overlap['program'].value_counts().idxmax()
+        max_overlap=overlap['program'].value_counts().tolist()[0]
 
         # print(f"{abbrev} means {best_guess} with {overlap['program'].value_counts()[0]} overlap")
 
-        #if the overlap is very little dont say anything with certainty!
-        if overlap['program'].value_counts()[0] > 5:
+        #if the overlap is very little don't say anything with certainty!
+        if max_overlap > 5:
             STUDENT_DATAFRAME['Acad Plan'] = STUDENT_DATAFRAME['Acad Plan'].replace(abbrev, best_guess)
         else:
             STUDENT_DATAFRAME['Acad Plan'] = STUDENT_DATAFRAME['Acad Plan'].replace(abbrev, best_guess)
 
-    #then combine the subject+catlog into one cell
+    #then combine the subject+catalog into one cell
     STUDENT_DATAFRAME['code'] = STUDENT_DATAFRAME['Subject'] + ' ' + STUDENT_DATAFRAME['Catalog']
 
-def get_student_info(id):
 
+def get_student_info(id):
     courses_taken=STUDENT_DATAFRAME[STUDENT_DATAFRAME['Empl ID']==id]
     student_name=courses_taken['Student Name'].values[0]
     student_program=courses_taken['Acad Plan'].values[0]
-    # print(student_program)
 
     classes_needed=CLASS_DATAFRAME[CLASS_DATAFRAME['program']==student_program].copy()
     classes_needed['attempted'] ="unknown"
     classes_needed['passed'] = "unknown"
 
     #check which classes they passed
-    #ASK WHAT A GRADE OF I MEANS
+    #TODO: get electives working
+    #TODO: ask what a grade of I means
     for index_need, needed_course in classes_needed.iterrows():
 
         needed_code=needed_course['code']
         checker=courses_taken[courses_taken['code']==needed_code]
-
         times_taken=checker.shape[0]
         if times_taken == 0:
             classes_needed.loc[index_need,'attempted']=0
@@ -416,8 +418,8 @@ def get_student_info(id):
     credits_passed=len(classes_needed[classes_needed['passed']==1])
     print(credits_passed)
     terms=[]*num_years
-def make_student_graph(courses,name,id):
 
+def make_student_graph(courses,name,id):
     num_years = len(courses['year'].unique())
     counts = courses.groupby(['term', 'year']).size().reset_index(name='count')
     max_in_a_term=counts['count'].max()
@@ -480,13 +482,16 @@ def make_student_graph(courses,name,id):
 
 start=time.time()
 
+if __name__ == "main":
+
+
 # programs = parse_maps_directory(MAP_DIR)
 # parse_programs(programs)
 pd.options.display.max_columns = 100
 CLASS_DATAFRAME=pd.read_csv("test.csv")
 load_student_data(DATA_PATH)
 
-get_student_info(1672787)
+get_student_info(1635643)
 # for x in range(0,100):
 #     get_student_info(1672629)
 # get_student_info(1672629)

@@ -1,6 +1,3 @@
-
-
-
 def gen_course():
     course={"name": 'widgets 101',
             "code": 'W1000',
