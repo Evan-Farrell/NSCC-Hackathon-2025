@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog, ttk, messagebox, simpledialog
+from PIL import Image, ImageTk
 import os
 import backend
 
@@ -30,9 +31,9 @@ def exportPathwayPdf():
     loading = ttk.Progressbar(root, orient='horizontal', length=200, mode='indeterminate')
     loading.place(relx=0.5, rely=0.5, anchor=CENTER)
     loading.start()
-    #, header_data
+    #
     try:
-        if backend.gen_pdf(value_store) == 1:
+        if backend.gen_pdf(value_store, header_data) == 1:
             loading.stop()
             loading.destroy()
             messagebox.showinfo("Export Success", "The PDF has been successfully exported.")
@@ -95,21 +96,38 @@ def create_widgets(x, y, term_key, combo_index, course_data):
 # Initialize application
 root = tk.Tk()
 root.title('Student RoadmApp')
-root.geometry("794x1123")  # Size of A4 paper at 96 PPI
+root.geometry("1594x1080")  # Size of A4 paper at 96 PPI
 
 # Initialize backend
-#MAP_DIR = os.getcwd() + r'\maps\22-23'
-#DATA_PATH = os.getcwd() + r"\SampleData\Template Data.xlsx"
-id_input = searchStudentID()
-backend.parse_maps_directory(searchFolder())
-backend.load_student_data(searchFile())
-data = backend.get_student_info(id_input)
+
+#id_input = searchStudentID()
+#backend.parse_maps_directory(searchFolder())
+#backend.load_student_data(searchFile())
+#data = backend.get_student_info(id_input)
+
+MAP_DIR = os.getcwd() + r'\maps\22-23'
+DATA_PATH = os.getcwd() + r"\maps\sampleData.xlsx"
+
+backend.parse_maps_directory(MAP_DIR)
+backend.load_student_data(DATA_PATH)
+data = backend.get_student_info('W1672629')
+
+
+global header_data
+header_data = process_data(data)
 
 # Load the background image
 image_path = os.getcwd() + r"\resources\gui_bg_template.png"
-image = tk.PhotoImage(file=image_path)
-template_bg = tk.Label(root, image=image)
+form_image = tk.PhotoImage(file=image_path)
+
+heatmap = header_data['progress_roadmap']
+heatmap = heatmap.resize((850, 850), Image.LANCZOS)
+heatmap_image = ImageTk.PhotoImage(heatmap)
+
+template_bg = tk.Label(root, image=form_image)
+heatmap_bg = tk.Label(root, image=heatmap_image)
 template_bg.place(x=0, y=0)  # Origin at top-left
+heatmap_bg.place(x=794, y=0)
 
 positions = [
     (29, 208),
@@ -119,8 +137,6 @@ positions = [
     (29, 792),
     (402, 792),
 ]
-global header_data
-header_data = process_data(data)
 
 # Display student info
 student_name = ttk.Label(root, text=header_data["name"], width=26)
