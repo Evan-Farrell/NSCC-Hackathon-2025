@@ -1,3 +1,11 @@
+# ==============================================================================
+# Title:        mapParsing.py
+# Author:       Evan Farrell
+# Date:         Jan 17, 2025
+# Description:  This script performs image processing tasks on the class roadmap PDFS with
+#               edge detection contour finding, and image manipulation using OpenCV and NumPy.
+# ==============================================================================
+
 import os
 from collections import defaultdict
 import re
@@ -8,19 +16,19 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-
-
-
 LOGGING = 0
-#Saves an image if logging is enabled
 def log_image(name, image):
+    """
+        Saves the provided image to a file if logging is enabled.
+    """
     if LOGGING:
         cv2.imwrite(os.getcwd() + "\\imgLogs\\" + name, image)
 
-
-#convert coordinates on the pdf plane to the cv2 plane
 def pdf_coord_to_png(x0_pdf, x1_pdf, y0_pdf, y1_pdf, image, page):
-    #get the dimensions of each
+    """
+        Converts coordinates from the PDF coordinate system to the PNG coordinate system.
+    """
+    #get the dimensions of image and pdf
     width_png, height_png = image.shape[1], image.shape[0]
     width_pdf, height_pdf = page.rect.width, page.rect.height
 
@@ -35,8 +43,11 @@ def pdf_coord_to_png(x0_pdf, x1_pdf, y0_pdf, y1_pdf, image, page):
 
     return x0_png, x1_png, y0_png, y1_png
 
-#convert coordinates on the cv2 plane to the pdf plane
 def png_to_pdf_coord(x0_png, x1_png, y0_png, y1_png, image, page):
+    """
+          Converts coordinates from the PNG coordinate system to the PDF coordinate system.
+    """
+    #get the dimensions of image and pdf
     width_png, height_png = image.shape[1], image.shape[0]
     width_pdf, height_pdf = page.rect.width, page.rect.height
 
@@ -51,25 +62,22 @@ def png_to_pdf_coord(x0_png, x1_png, y0_png, y1_png, image, page):
 
     return x0_pdf, x1_pdf, y0_pdf, y1_pdf
 
-
-
-#Go through the academic maps folder and extracts info from each pdf title
 def parse_directory(dir):
-    # gives similarity of two strings, to account for typos in the pdf names
-    def string_similarity(a, b):
-        return SequenceMatcher(None, a, b).ratio()
+    """
+          Goes through the passed directory and maps each program title to the corresponding path
+    """
+
     #If passed '1' just immediately return the data for front end testing
     if str(dir) == '1':
         CLASS_DATAFRAME=pd.read_csv("resources/test.csv")
         return CLASS_DATAFRAME
+
     programs = defaultdict(dict)
 
-    #check errors check errors check erros >:(
+    #Skip non-pdf files
     for pdf in os.listdir(dir):
         if os.path.splitext(pdf)[1] != '.pdf':
             continue
-
-        #check that it's actually a pdf blah bloah blah
 
         #split the title
         pdf_arr = pdf.split('-')
@@ -77,7 +85,8 @@ def parse_directory(dir):
         #get the title, spell check it... some of the pdfs were not spelled the same >:(
         programTitle = pdf_arr[0].strip()
         for program in programs.keys():
-            similarity = string_similarity(programTitle, program)
+            similarity = SequenceMatcher(None, programTitle, program).ratio()
+            #if two titles are very similar assume they are the same program and set them equal
             if similarity > 0.9:
                 # print(f"{program} and {programTitle} have {similarity}")
                 programTitle = program
@@ -92,28 +101,38 @@ def parse_directory(dir):
 
     return parse_programs(programs)
 
-
 def parse_programs(programs):
+    """
+        For each program generating the bounding boxes for the programs 'parse_map()',
+        and then parse the boxes 'parse_boxes()'
+    """
+    #keep a count for image logging purposes
     count = 0
     class_list=[]
     for program in programs.keys():
         for term in programs[program].keys():
             bound_boxes = parse_map(programs[program][term], count)
-            #append this map's classes to the classlist array
             class_list=class_list + parse_boxes(bound_boxes, programs[program][term], program,term)
             count += 1
         print(f"Parsed {program}")
 
     CLASS_DATAFRAME=pd.DataFrame.from_dict(class_list)
-    #save the csv for quick access for bug testing
-    # CLASS_DATAFRAME.to_csv("test.csv",index=False)
+
+    #optionally save the csv for quick access for bug testing
+    #CLASS_DATAFRAME.to_csv("test.csv",index=False)
+
     return CLASS_DATAFRAME
 
-#takes in a single academic map pdf and
-def parse_map(path, count):
-    # checks if recA is inside recB
 
+def parse_map(path, count):
+    """
+        Given the path to an academic map, perform some image analysis to create bounding boxes around the information
+        we want
+    """
     def check_if_inside(recA, recB):
+        """
+            Little helper function to check if recA is inside recB!
+        """
         # recA
         xA0 = recA['x']
         yA0 = recA['y']
@@ -126,39 +145,40 @@ def parse_map(path, count):
         xB1 = recB['x'] + recB['w']
         yB1 = recB['y'] + recB['h']
 
-        # check if each point in A is inside B
+        #check if each point in A is inside B
         if xA0 >= xB0 and yA0 >= yB0 and xA1 < xB1 and yA1 <= yB1:
             return True
         return False
 
+    #convert the pdf to an image
     doc = fitz.open(path)
     page = doc[0]
     pix = page.get_pixmap(dpi=500)
     image = Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
 
-    #convert image from np_array to
+    #convert image from np_array to cv2 image (they use different colour schemes)
     image = np.array(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     output_image = image.copy()
 
-    doc = fitz.open(path)
-    page = doc[0]
-
-    #define the colour range to look in
+    #define the colour range to look in (we only want to worry about colours that contain info we need)
     lower_black = np.array([0, 0, 0])
     upper_black = np.array([200, 200, 200])
     ranged_image = cv2.inRange(image, lower_black, upper_black)
 
-    log_image(f"testranged{count}.png", ranged_image)
 
-    # edge detection
+
+    #use Canny edge detector to get just the 'edges' of things in the image
     edges = cv2.Canny(ranged_image, 60, 80)
     kernel = np.ones((5, 5), np.uint8)
 
-    #then dilate them to make them larger
+    #dilate edges them to make them larger (this is to connect small gaps in the rectangles that might exist
     dilated_edges = cv2.dilate(edges, kernel, iterations=4)
 
-    #we then want to find the two top-leftmost occurrences of the word term!
+    #we then want to find the two top-leftmost occurrences of the word term
+    #all the rectangles representing classes are directly below a term box
+    #so by checking an intersection of the x-coord of a term box we can determine what
+    #class a term is in!
     term_recs = page.search_for("term")
     sorted(term_recs, key=lambda x: x[0])
     sorted(term_recs, key=lambda y: y[0])
@@ -171,8 +191,6 @@ def parse_map(path, count):
         y1 = round(term_recs[i].y1)
 
         x0, x1, y0, y1 = pdf_coord_to_png(x0, x1, y0, y1, image, page)
-        w = x1 - x0
-        h = y1 - y0
 
         #what we really care about here is the x value of the center
         center_x = round((x0 + x1) / 2)
@@ -182,25 +200,19 @@ def parse_map(path, count):
         if LOGGING:
             cv2.line(output_image, (center_x, y1), (center_x, image.shape[0]), (0, 255, 0), 4)
 
-    #display the intersect lines
-    log_image(f"intersectLogs/term{count}.png", output_image)
-
-    #display the dilated edges
-    log_image(f"testedges{count}.png", dilated_edges)  # Debugging: Show edges
-
-    #find contours
+    #find contours (this is basically a list of connected shapes from the dilated_edges image)
     contours, hierarchy = cv2.findContours(dilated_edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
     boxes = []
     for contour in contours:
-        #bounding box for each contour
+
+        #create a rectangle around each contour
         x, y, w, h = cv2.boundingRect(contour)
 
         #get rid of bound boxes above the term blocks
         if y < term_centers[0]['y']:
             continue
 
-        #get rid of bound boxes not intersecting a term block
+        #get rid of bound boxes not intersecting a term block's x coordinate
         #term I
         if x < term_centers[0]['x'] < x + w:
             term = 1
@@ -223,8 +235,8 @@ def parse_map(path, count):
     for box in to_remove:
         boxes.remove(box)
 
+    #draw all the boxes on the output image for logging
     if LOGGING:
-        bound_count = 0
         for box in boxes:
             if box['term'] == 1:
                 colour = (224, 13, 224)
@@ -236,12 +248,9 @@ def parse_map(path, count):
             w = box['w']
             h = box['h']
 
-            crop = image[y:y + h, x:x + w]
             cv2.rectangle(output_image, (x, y), (x + w, y + h), colour, 7)
-            log_image(f"boundLogs/bound{bound_count}.png", crop)
-            bound_count = bound_count + 1
 
-    #convert the boxes to pdf format for pyMuPDF
+    #convert the boxes to pdf format for pyMuPDF to extract text
     pdf_bounding_boxes = []
     for box in boxes:
         x0 = box['x']
@@ -252,13 +261,16 @@ def parse_map(path, count):
         pdf_bounding_box = {'term': box['term'], "x0": pdf_box[0], "y0": pdf_box[2], "x1": pdf_box[1], "y1": pdf_box[3]}
         pdf_bounding_boxes.append(pdf_bounding_box)
 
-    log_image(f"testbounded{count}.png", output_image)
+    log_image(f"boundLogs/testbounded{count}.png", output_image)
+    log_image(f"rangeLogs/testranged{count}.png", ranged_image)
+    log_image(f"edgeLogs/testedges{count}.png", dilated_edges)
 
     return pdf_bounding_boxes
 
-
-#Gathers the class info from each bounding box extracted from the map pdfs
 def parse_boxes(boxes, path, program,year):
+    """
+        Extracts the text from inside each bounding box
+    """
     doc = fitz.open(path)
     page = doc[0]
 
