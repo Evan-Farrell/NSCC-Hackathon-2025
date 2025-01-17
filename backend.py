@@ -14,12 +14,15 @@ import time
 import textwrap
 import PIL
 from difflib import SequenceMatcher
+from PyPDF2 import PdfReader,PdfWriter
+from PyPDF2.generic import create_string_object
 
 #for testing
 PDF_PATH = os.getcwd() + r"\maps\22-23\Business Intelligence Analytics - Advising Map - '22-'23.pdf"
 MAP_DIR = os.getcwd() + r"\maps\22-23"
 DATA_PATH= os.getcwd() + r"\SampleData\Template Data.xlsx"
-LOGGING = 0
+FORMAT_PATH=os.getcwd()+ r"\latexFunctions\format.pdf"
+LOGGING = 1
 LAST_SEARCHED_ID=0
 
 
@@ -227,6 +230,10 @@ def string_similarity(a, b):
 
 #Go through the academic maps folder and extracts info from each pdf title
 def parse_maps_directory(dir):
+    global CLASS_DATAFRAME
+    if str(dir) == '1':
+        CLASS_DATAFRAME=pd.read_csv("test.csv") 
+        return
     programs = defaultdict(dict)
 
     #check errors check errors check erros >:(
@@ -254,8 +261,8 @@ def parse_maps_directory(dir):
             programs[programTitle]['year2'] = dir + "\\" + pdf
         else:
             programs[programTitle]['year0'] = dir + "\\" + pdf
-
-    return (programs)
+    #print(programs)
+    parse_programs(programs)
 
 #Gathers the class info from each bounding box extracted from the map pdfs
 def parse_boxes(boxes, path, program,year):
@@ -326,8 +333,6 @@ def parse_programs(programs):
 
     CLASS_DATAFRAME=pd.DataFrame.from_dict(class_list)
     CLASS_DATAFRAME.to_csv("test.csv",index=False)
-
-    print(CLASS_DATAFRAME)
 
 def load_student_data(path):
     global STUDENT_DATAFRAME
@@ -491,7 +496,7 @@ def get_student_info(id):
         while len(course_list)<=5 and add_count<len(term1):
             course = {"name": term1.iloc[add_count]['name'],
                       "code": term1.iloc[add_count]['code'],
-                      "unit_value": term1.iloc[add_count]['unit_value'],
+                      "unit_value": 1,#term1.iloc[add_count]['unit_value'],
                       "misc": "could add anything else you need..."
                       }
             add_count=add_count+1
@@ -507,7 +512,7 @@ def get_student_info(id):
         while len(course_list) <= 5 and add_count < len(term2):
             course = {"name": term2.iloc[add_count]['name'],
                       "code": term2.iloc[add_count]['code'],
-                      "unit_value": term2.iloc[add_count]['unit_value'],
+                      "unit_value": 1,#term2.iloc[add_count]['unit_value'],
                       "misc": "could add anything else you need..."
                       }
             add_count = add_count + 1
@@ -526,6 +531,7 @@ def get_student_info(id):
         'progress_roadmap': map_img,
         'remaining_courses': remaining_courses
     }
+
     return student_info
 
 def make_student_graph(courses,name,id):
@@ -608,13 +614,14 @@ if __name__ == "__main__":
 
     # programs = parse_maps_directory(MAP_DIR)
     # parse_programs(programs)
+    
     pd.options.display.max_columns = 100
     CLASS_DATAFRAME=pd.read_csv("test.csv")
     load_student_data(DATA_PATH)
 
-    # get_student_info(1635643)
-
-    print(get_student_info("W1672629"))
+    get_student_info("W1635643")
+    # 1635643
+    # print(get_student_info("W1672629"))
     #failed twice
     # get_student_info(1635643)
 
