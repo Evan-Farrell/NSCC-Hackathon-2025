@@ -8,4 +8,4 @@ imgLogs/**/*.png
 !imgLogs/*/
 
 studentMaps/*
-!studentMaps/*/
+!studentMaps
