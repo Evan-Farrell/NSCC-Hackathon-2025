@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
+#If true saves images to imgLogs throughout the process for demonstration
 LOGGING = 0
 def log_image(name, image):
     """
@@ -320,3 +321,8 @@ def parse_boxes(boxes, path, program,year):
                       "year":year}
         class_list.append(class_to_add)
     return class_list
+
+
+if __name__ == "__main__":
+    MAP_DIR = os.getcwd() + r"\maps\22-23"
+    parse_directory(MAP_DIR)

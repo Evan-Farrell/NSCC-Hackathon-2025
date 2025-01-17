@@ -5,6 +5,7 @@
 # Description:  Loads in the spreadsheet with student information and processes it
 #               using the information extracted from the road maps.
 # ==============================================================================
+import os
 
 import pandas as pd
 
@@ -38,3 +39,10 @@ def load_student_data(path,CLASS_DATAFRAME):
             STUDENT_DATAFRAME['Acad Plan'] = STUDENT_DATAFRAME['Acad Plan'].replace(abbrev, best_guess)
 
     return STUDENT_DATAFRAME
+
+
+if __name__ == "__main__":
+    DATA_PATH = os.getcwd() + r"\maps\sampleData.xlsx"
+    CLASS_DATAFRAME=pd.read_csv("resources/test.csv")
+    temp=load_student_data(DATA_PATH,CLASS_DATAFRAME)
+    print(temp)

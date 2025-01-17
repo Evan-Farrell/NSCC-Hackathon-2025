@@ -6,21 +6,22 @@
 #               on the frontend
 # ==============================================================================
 import math
+
+import pandas as pd
+
 import mapParsing
 import studentDataParsing
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image
 import exportPDF
-import pandas as pd
 import numpy as np
 import os
 import time
 import textwrap
 
-FORMAT_PATH=os.getcwd()+ r"\resources\format.pdf"
 
-LAST_SEARCHED_ID=0
+FORMAT_PATH=os.getcwd()+ r"\resources\format.pdf"
 STUDENT_DATAFRAME={}
 CLASS_DATAFRAME={}
 
@@ -204,8 +205,6 @@ def make_student_graph(courses,name,id):
 
     plt.title(f"Academic map for {courses['program'].iloc[0]} \n {name} {id}    ")
 
-    # plt.show()
-
     #fig to a PIL Image
     fig.canvas.draw()
     raw_data = fig.canvas.buffer_rgba()
@@ -213,8 +212,14 @@ def make_student_graph(courses,name,id):
     image_array = np.frombuffer(raw_data, dtype=np.uint8).reshape(height, width, 4)
     pil_image = Image.fromarray(image_array)
     plt.clf()
+    plt.close(fig)
 
     return pil_image
+
+def create_all_maps():
+    all_ids=STUDENT_DATAFRAME['Empl ID'].unique()
+    for id in all_ids:
+        get_student_info(id)['progress_roadmap'].save(r"studentMaps\\" + f'{id} map.png')
 
 if __name__ == "__main__":
 
@@ -225,16 +230,16 @@ if __name__ == "__main__":
 
     # CLASS_DATAFRAME = mapParsing.parse_directory(MAP_DIR)
 
-    pd.options.display.max_columns = 100
+    # pd.options.display.max_columns = 100
     CLASS_DATAFRAME=pd.read_csv("resources/test.csv")
     load_student_data(DATA_PATH)
-
+    create_all_maps()
     # get_student_info("W1635643")
     # 1635643
-    print(get_student_info("W1672629"))
+    # print(get_student_info("W1672629"))
     #failed twice
     # get_student_info(1635643)
 
-    print(f"took {time.time() - start} secs")
+    # print(f"took {time.time() - start} secs")
 
 
