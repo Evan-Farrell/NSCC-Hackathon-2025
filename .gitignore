@@ -4,7 +4,7 @@ venv
 scratch.py
 
 #ignore all the pngs inside imgLogs but preserve the structure
-imgLogs/*
+imgLogs/*.png
 !imgLogs/*/
 
 studentMaps/*
