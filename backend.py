@@ -1,3 +1,10 @@
+# ==============================================================================
+# Title:        backend.py
+# Author:       Evan Farrell
+# Date:         Jan 17, 2025
+# Description:  This script handles the calls from the GUI as well as generating the student report to display
+#               on the frontend
+# ==============================================================================
 import math
 import mapParsing
 import studentDataParsing
@@ -29,7 +36,9 @@ def gen_pdf(data,header):
     return exportPDF.gen_pdf(data,header)
 
 def get_student_info(id):
-
+    """
+        generate a dictionary with all the necessary student info that the frontend needs
+    """
     if str(id)[0].upper() =="W":
         id=int(str(id)[1:])
 
@@ -134,6 +143,9 @@ def get_student_info(id):
     return student_info
 
 def make_student_graph(courses,name,id):
+    """
+        Generate an example roadmap with the students passes/fails colour coded
+    """
     num_years = len(courses['year'].unique())
     counts = courses.groupby(['term', 'year']).size().reset_index(name='count')
     max_in_a_term=counts['count'].max()
@@ -203,8 +215,6 @@ def make_student_graph(courses,name,id):
     plt.clf()
 
     return pil_image
-
-
 
 if __name__ == "__main__":
 
