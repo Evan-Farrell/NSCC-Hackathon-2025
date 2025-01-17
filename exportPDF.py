@@ -4,10 +4,12 @@ import os
 
 FORMAT_PATH=os.getcwd()+r"/resources/format.pdf"
 
-def gen_pdf(data):
+
+def gen_pdf(data,header):
 
     def unpack_data(data):
         mapped_data = []
+
         for i, term in enumerate(data.keys(), start=1):
             for j, course in enumerate(data[term], start=1):
                 code_tag = "code" + str(i) + str(j)
@@ -29,6 +31,9 @@ def gen_pdf(data):
         })
 
     mappings=unpack_data(data)
+    mappings.append(("name",header['name']))
+    mappings.append(("prog",header['program']))
+    mappings.append(("id",header['id']))
     reader = PdfReader(FORMAT_PATH)
     page = reader.pages[0]
     annotations = page.get("/Annots")
@@ -41,7 +46,7 @@ def gen_pdf(data):
             #updated text field
             update_field(annot_obj,"")
             annot_dicts[annot_obj.get("/T")]=annot_obj
-            # update_field(annot_obj,"")
+
 
 
     for field,val in mappings:

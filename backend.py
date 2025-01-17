@@ -11,11 +11,6 @@ import os
 import time
 import textwrap
 
-
-
-
-#for testing
-
 FORMAT_PATH=os.getcwd()+ r"\resources\format.pdf"
 
 LAST_SEARCHED_ID=0
@@ -30,8 +25,8 @@ def load_student_data(path):
     global STUDENT_DATAFRAME
     STUDENT_DATAFRAME=studentDataParsing.load_student_data(path,CLASS_DATAFRAME)
 
-def gen_pdf(data):
-    return exportPDF.gen_pdf(data)
+def gen_pdf(data,header):
+    return exportPDF.gen_pdf(data,header)
 
 def get_student_info(id):
 
@@ -197,7 +192,7 @@ def make_student_graph(courses,name,id):
 
     plt.title(f"Academic map for {courses['program'].iloc[0]} \n {name} {id}    ")
 
-    plt.show()
+    # plt.show()
 
     #fig to a PIL Image
     fig.canvas.draw()

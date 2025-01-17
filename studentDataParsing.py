@@ -1,3 +1,11 @@
+# ==============================================================================
+# Title:        studentDataParsing.py
+# Author:       Evan Farrell
+# Date:         Jan 17, 2025
+# Description:  Loads in the spreadsheet with student information and processes it
+#               using the information extracted from the road maps.
+# ==============================================================================
+
 import pandas as pd
 
 def load_student_data(path,CLASS_DATAFRAME):
@@ -29,6 +37,4 @@ def load_student_data(path,CLASS_DATAFRAME):
         else:
             STUDENT_DATAFRAME['Acad Plan'] = STUDENT_DATAFRAME['Acad Plan'].replace(abbrev, best_guess)
 
-    #then combine the subject+catalog into one cell
-    STUDENT_DATAFRAME['code'] = STUDENT_DATAFRAME['Subject'] + ' ' + STUDENT_DATAFRAME['Catalog']
     return STUDENT_DATAFRAME
