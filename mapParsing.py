@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from PIL import Image
 
-import helperFuncs
 
 
 
@@ -78,7 +77,7 @@ def parse_directory(dir):
         #get the title, spell check it... some of the pdfs were not spelled the same >:(
         programTitle = pdf_arr[0].strip()
         for program in programs.keys():
-            similarity = helperFuncs.string_similarity(programTitle, program)
+            similarity = string_similarity(programTitle, program)
             if similarity > 0.9:
                 # print(f"{program} and {programTitle} have {similarity}")
                 programTitle = program
@@ -171,7 +170,7 @@ def parse_map(path, count):
         y0 = round(term_recs[i].y0)
         y1 = round(term_recs[i].y1)
 
-        x0, x1, y0, y1 = helperFuncs.pdf_coord_to_png(x0, x1, y0, y1, image, page)
+        x0, x1, y0, y1 = pdf_coord_to_png(x0, x1, y0, y1, image, page)
         w = x1 - x0
         h = y1 - y0
 
@@ -249,7 +248,7 @@ def parse_map(path, count):
         y0 = box['y']
         x1 = x0 + box['w']
         y1 = y0 + box['h']
-        pdf_box = helperFuncs.png_to_pdf_coord(x0, x1, y0, y1, image, page)
+        pdf_box = png_to_pdf_coord(x0, x1, y0, y1, image, page)
         pdf_bounding_box = {'term': box['term'], "x0": pdf_box[0], "y0": pdf_box[2], "x1": pdf_box[1], "y1": pdf_box[3]}
         pdf_bounding_boxes.append(pdf_bounding_box)
 

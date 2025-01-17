@@ -45,7 +45,7 @@ def gen_pdf(data):
 
 
     for field,val in mappings:
-        if val==None:
+        if val is None:
             val=""
         update_field(annot_dicts[field],str(val))
 
