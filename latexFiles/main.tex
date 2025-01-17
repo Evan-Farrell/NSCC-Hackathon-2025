@@ -1,3 +1,13 @@
+%===============================================================================
+% Title:        main.tex
+% Author:       Evan Farrell
+% Date:         Jan 17, 2025
+% Description:  This LaTeX document compiles into a PDF that mimics the student
+%               academic plan provided by Michael. The choice of LaTeX allows
+%               precise control over textfield names and positions, allowing
+%               easier population of the form via code.
+%===============================================================================
+
 \documentclass[legalpaper]{article}
 \usepackage{calc,amsmath,amssymb,amsfonts}
 \usepackage[T1]{fontenc}
@@ -27,19 +37,6 @@
 \renewcommand\arraystretch{1.5}
 
 
-
-
-            
-% \setvalue{term1, property 1 = value 1, property 2 = value 2}
-% \setvalue{term1, property 1 = value 1, property 2 = value 2}
-% \setvalue{term1, property 1 = value 1, property 2 = value 2}
-% \setvalue{term1, property 1 = value 1, property 2 = value 2}
-% \setvalue{term1, property 1 = value 1, property 2 = value 2}
-
-% \setvalue{term = foo foo bar}
-% \getvalue{VARIABLE1}
-% \declare{}
-
 \begin{document}
 
 % HEADER FOR TABLES
@@ -57,8 +54,8 @@
 \end{flushleft}
 %-------------------------------------------------------- 
 
+% TERMS 1 & 2
 \begin{flushleft}
-
 \begin{supertabular}{|p{1in}|p{2.2in}|m{0.4in}||p{1in}|p{2.2in}|m{0.4in}|}
 \hline
 \multicolumn{3}{|m{3.6in}||}{\centering \textbf{Session:\TextField[name=session1, width=1.4in, charsize=12pt, value=]}} &
@@ -162,8 +159,8 @@
 \end{supertabular}
 \end{flushleft}
 
+% TERMS 3 & 4
 \begin{flushleft}
-
 \begin{supertabular}{|p{1in}|p{2.2in}|m{0.4in}||p{1in}|p{2.2in}|m{0.4in}|}
 \hline
 \multicolumn{3}{|m{3.6in}||}{\centering \textbf{Session:\TextField[name=session3, width=1.4in, charsize=12pt, value=]}} &
@@ -267,8 +264,8 @@
 \end{supertabular}
 \end{flushleft}
 
+% TERMS 5 & 6
 \begin{flushleft}
-
 \begin{supertabular}{|p{1in}|p{2.2in}|m{0.4in}||p{1in}|p{2.2in}|m{0.4in}|}
 \hline
 \multicolumn{3}{|m{3.6in}||}{\centering \textbf{Session:\TextField[name=session5, width=1.4in, charsize=12pt, value=]}} &
