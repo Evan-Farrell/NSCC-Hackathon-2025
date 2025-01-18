@@ -1,3 +1,11 @@
+# ==============================================================================
+# Title:        guiOverlay.py
+# Author:       Brad Steele
+# Date:         Jan 17, 2025
+# Description:  This script obtains data from backend scripts, renders a GUI,
+# and allows user to update fields based on obtained data.  
+# ==============================================================================
+
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog, ttk, messagebox, simpledialog
@@ -5,28 +13,28 @@ from PIL import Image, ImageTk
 import os
 import backend
 
-# Constants for layout
+#widget layout constants
 ROW_SPACING = 24.5
 COMBOBOX_OFFSET = 105
 WEIGHT_LABEL_OFFSET = 325
 MAX_COURSES_PER_TERM = 6
 
-# Prompts filesystem dialog box, returns path to file
+#prompts filesystem dialog box, returns path to file
 def searchFile():
     pwd = os.getcwd()
     return filedialog.askopenfilename(parent=root, initialdir=pwd, title='Please select a file', 
                                        filetypes=(('Excel Spreadsheet', '*.xlsx'), ("All files", "*.*")))
 
-# Prompts filesystem dialog box, returns path to directory
+#prompts filesystem dialog box, returns path to directory
 def searchFolder():
     pwd = os.getcwd()
     return filedialog.askdirectory(parent=root, initialdir=pwd, title='Please select a directory')
 
-# Prompts for student ID
+#prompts for student ID
 def searchStudentID():
     return simpledialog.askstring("Student Search", "Please Input Student ID:")
 
-# Exports pathway PDF
+#calls the function to generate populated pdf
 def exportPathwayPdf():
     loading = ttk.Progressbar(root, orient='horizontal', length=200, mode='indeterminate')
     loading.place(relx=0.5, rely=0.5, anchor=CENTER)
@@ -45,8 +53,8 @@ def exportPathwayPdf():
     #     loading.stop()
     #     loading.destroy()
 
-# Processes data from the backend
-def process_data(data):
+#seperates document header information and roadmap image from bulk data 
+def processData(data):
     return {
         'id': data.get('id'),
         'name': data.get('name'),
@@ -56,8 +64,8 @@ def process_data(data):
         'progress_roadmap': data.get('progress_roadmap')
     }
 
-# Helper to bind combobox actions
-def bind_combobox(combobox, label1, label2, course_data, term_key, combo_key):
+#updates labels with associated course ID key 
+def updateFields(combobox, label1, label2, course_data, term_key, combo_key):
     def handler(event):
         selected_code = combobox.get()
         for course in course_data:
@@ -72,8 +80,8 @@ def bind_combobox(combobox, label1, label2, course_data, term_key, combo_key):
                 break
     combobox.bind("<<ComboboxSelected>>", handler)
 
-# Helper to create widgets
-def create_widgets(x, y, term_key, combo_index, course_data):
+#renders widgets over background
+def createWidgets(x, y, term_key, combo_index, course_data):
     combo_key = f"combobox_{combo_index + 1}"
 
     combobox = ttk.Combobox(root, values=[c["code"] for c in course_data], width=13)
@@ -91,32 +99,30 @@ def create_widgets(x, y, term_key, combo_index, course_data):
         "label2_value": None
     }
 
-    bind_combobox(combobox, label1, label2, course_data, term_key, combo_key)
+    updateFields(combobox, label1, label2, course_data, term_key, combo_key)
 
-# Initialize application
+#initialize application
 root = tk.Tk()
 root.title('Student RoadmApp')
 root.geometry("1594x1080")  # Size of A4 paper at 96 PPI
 
-# Initialize backend
+#retrieve data from backend
+backend.parse_maps_directory(searchFolder())
+backend.load_student_data(searchFile())
+data = backend.get_student_info(searchStudentID())
 
-#id_input = searchStudentID()
-#backend.parse_maps_directory(searchFolder())
-#backend.load_student_data(searchFile())
-#data = backend.get_student_info(id_input)
+# MAP_DIR = os.getcwd() + r'\maps\22-23'
+# DATA_PATH = os.getcwd() + r"\maps\sampleData.xlsx"
 
-MAP_DIR = os.getcwd() + r'\maps\22-23'
-DATA_PATH = os.getcwd() + r"\maps\sampleData.xlsx"
-
-backend.parse_maps_directory(MAP_DIR)
-backend.load_student_data(DATA_PATH)
-data = backend.get_student_info('W1672629')
+# backend.parse_maps_directory(MAP_DIR)
+# backend.load_student_data(DATA_PATH)
+# data = backend.get_student_info('W1672629')
 
 
 global header_data
-header_data = process_data(data)
+header_data = processData(data)
 
-# Load the background image
+#render background image and heatmap image
 image_path = os.getcwd() + r"\resources\gui_bg_template.png"
 form_image = tk.PhotoImage(file=image_path)
 
@@ -126,8 +132,8 @@ heatmap_image = ImageTk.PhotoImage(heatmap)
 
 template_bg = tk.Label(root, image=form_image)
 heatmap_bg = tk.Label(root, image=heatmap_image)
-template_bg.place(x=0, y=0)  # Origin at top-left
-heatmap_bg.place(x=794, y=0)
+template_bg.place(x=0, y=0)  
+heatmap_bg.place(x=794, y=0)  
 
 positions = [
     (29, 208),
@@ -138,19 +144,19 @@ positions = [
     (402, 792),
 ]
 
-# Display student info
+#document header information
 student_name = ttk.Label(root, text=header_data["name"], width=26)
-student_name.place(x=50, y=50)
+student_name.place(x=129, y=84)
 student_id = ttk.Label(root, text=header_data["id"], width=26)
-student_id.place(x=50, y=80)
+student_id.place(x=554, y=84)
 student_course = ttk.Label(root, text=header_data["program"], width=26)
-student_course.place(x=50, y=110)
+student_course.place(x=96, y=118)
 
 # Initialize value store
 global value_store
 value_store = {}
 
-# Create widgets for terms and courses
+#create widgets based on number of semesters left
 for term_index, (x, y) in enumerate(positions):
     if term_index >= len(data["remaining_courses"]):
         break
@@ -165,14 +171,12 @@ for term_index, (x, y) in enumerate(positions):
         if combo_index >= len(course_list):
             break
 
-        create_widgets(x, y, term_key, combo_index, course_list)
+        createWidgets(x, y, term_key, combo_index, course_list)
 
 # Add menu bar
 menubar = Menu(root)
 file_menu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label='File', menu=file_menu)
-file_menu.add_command(label='Select Data Source', command=searchFile)
-file_menu.add_command(label='Select Roadmap Directory', command=searchFolder)
 file_menu.add_command(label='Export to .pdf', command=exportPathwayPdf)
 file_menu.add_separator()
 file_menu.add_command(label='Exit Application', command=root.destroy)
